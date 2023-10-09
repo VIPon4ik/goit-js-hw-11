@@ -90,7 +90,7 @@ function generatingImages(q, page) {
         }
         markupImages(data.hits);
         nextPageButt.style.display = 'block';
-        if (data.totalHits === galleryElem.childElementCount) {
+        if (data.totalHits === galleryElem.childElementCount || galleryElem.childElementCount >= 500) {
             Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
             nextPageButt.style.display = 'none';
             return;
