@@ -1,6 +1,8 @@
 'use strict';
 
 import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 import axios from "axios";
 
 const apiKey = '19760378-d2f1c7488e9d6752a9d7092b3';
@@ -20,10 +22,12 @@ const inputElem = document.querySelector('input');
 let inputValue = '';
 let page = 1;
 
+const lightbox = new SimpleLightbox('.photo-card a');
+
 inputElem.addEventListener('input', () => {
     inputValue = inputElem.value;
     nextPageButt.style.display = 'none';
-})
+});
 
 formElem.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -32,11 +36,11 @@ formElem.addEventListener('submit', (event) => {
     galleryElem.innerHTML = '';
 
     generatingImages(inputValue, page);
-
 });
 
 nextPageButt.addEventListener('click', (event) => {
     page++;
+    
     generatingImages(inputValue, page);
 })
 
@@ -54,7 +58,9 @@ function markupImages(images) {
     images.forEach((img) => {
         const imgMarkup = `
             <div class="photo-card">
-                <img src="${img.webformatURL}" alt="${img.tags}" loading="lazy" />
+                <a href="${img.largeImageURL}">
+                    <img src="${img.webformatURL}" alt="${img.tags}" loading="lazy" />
+                </a>
                 <div class="info">
                     <p class="info-item">
                         <b>Likes</b>
@@ -95,5 +101,8 @@ function generatingImages(q, page) {
             nextPageButt.style.display = 'none';
             return;
         };
+    })
+    .then(() => {
+        lightbox.refresh();
     });
 }
