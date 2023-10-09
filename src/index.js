@@ -31,23 +31,19 @@ formElem.addEventListener('submit', (event) => {
     page = 1;
     galleryElem.innerHTML = '';
 
-    console.log(inputValue);
-
     generatingImages(inputValue, page);
 
 });
 
 nextPageButt.addEventListener('click', (event) => {
     page++;
-    console.log(inputValue);
     generatingImages(inputValue, page);
 })
 
 async function gettingApiImages(q, pg) {
     try {
         const response = await axios.get('https://pixabay.com/api/', { params: { ...axiosOptions, q: q, page: page }});
-        const data = await response.data.hits;
-        console.log(response)
+        const data = await response.data;
         return data;
     } catch (error) {
         Notiflix.Notify.failure('Sorry, there are problems with API.');
@@ -87,18 +83,17 @@ function generatingImages(q, page) {
     const data = gettingApiImages(q, page);
     data
     .then(data => {
-        if (!data.length) {
+        if (!data.hits.length) {
             Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
             galleryElem.innerHTML = '';
             return;
         }
-        if (data.length !== 40) {
+        markupImages(data.hits);
+        nextPageButt.style.display = 'block';
+        if (data.totalHits === galleryElem.childElementCount) {
             Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-            markupImages(data);
             nextPageButt.style.display = 'none';
             return;
         };
-        markupImages(data);
-        nextPageButt.style.display = 'block';
     });
 }
