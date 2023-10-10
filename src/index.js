@@ -12,7 +12,7 @@ const axiosOptions = {
     orientation: 'horizontal',
     safesearch: true,
     per_page: 40,
-}
+};
 
 const formElem = document.querySelector('form');
 const galleryElem = document.querySelector('.gallery');
@@ -42,7 +42,7 @@ nextPageButt.addEventListener('click', (event) => {
     page++;
 
     generatingImages(inputValue, page);
-})
+});
 
 async function gettingApiImages(query, page) {
     try {
@@ -51,8 +51,8 @@ async function gettingApiImages(query, page) {
         return data;
     } catch (error) {
         Notiflix.Notify.failure('Sorry, there are problems with API.');
-    }
-}
+    };
+};
 
 function markupImages(images) {
     images.forEach((img) => {
@@ -88,7 +88,7 @@ function markupImages(images) {
 function smoothScroll() {
     if (page === 1) {
         return;
-    }
+    };
 
     const galleryChildsList = document.querySelectorAll('.photo-card');
     const { height: cardHeight } = galleryChildsList[galleryChildsList.length - 1].getBoundingClientRect();
@@ -97,7 +97,7 @@ function smoothScroll() {
         top: cardHeight * 2,
         behavior: "smooth",
     });
-}
+};
 
 async function generatingImages(q, page) {
     const data = await gettingApiImages(q, page);
@@ -105,7 +105,8 @@ async function generatingImages(q, page) {
         Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         galleryElem.innerHTML = '';
         return;
-    }
+    };
+
     markupImages(data.hits);
     lightbox.refresh();
     nextPageButt.style.display = 'block';
