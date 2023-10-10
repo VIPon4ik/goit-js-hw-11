@@ -40,13 +40,13 @@ formElem.addEventListener('submit', (event) => {
 
 nextPageButt.addEventListener('click', (event) => {
     page++;
-    
+
     generatingImages(inputValue, page);
 })
 
-async function gettingApiImages(q, pg) {
+async function gettingApiImages(query, page) {
     try {
-        const response = await axios.get('https://pixabay.com/api/', { params: { ...axiosOptions, q: q, page: page }});
+        const response = await axios.get('https://pixabay.com/api/', { params: { ...axiosOptions, q: query, page: page }});
         const data = await response.data;
         return data;
     } catch (error) {
@@ -85,24 +85,36 @@ function markupImages(images) {
     });
 };
 
-function generatingImages(q, page) {
-    const data = gettingApiImages(q, page);
-    data
-    .then(data => {
-        if (!data.hits.length) {
-            Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-            galleryElem.innerHTML = '';
-            return;
-        }
-        markupImages(data.hits);
-        nextPageButt.style.display = 'block';
-        if (data.totalHits === galleryElem.childElementCount || galleryElem.childElementCount >= 500) {
-            Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-            nextPageButt.style.display = 'none';
-            return;
-        };
-    })
-    .then(() => {
-        lightbox.refresh();
+function smoothScroll() {
+    if (page === 1) {
+        return;
+    }
+
+    const galleryChildsList = document.querySelectorAll('.photo-card');
+    const { height: cardHeight } = galleryChildsList[galleryChildsList.length - 1].getBoundingClientRect();
+
+    window.scrollBy({
+        top: cardHeight * 2,
+        behavior: "smooth",
     });
+}
+
+async function generatingImages(q, page) {
+    const data = await gettingApiImages(q, page);
+    if (!data.hits.length) {
+        Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+        galleryElem.innerHTML = '';
+        return;
+    }
+    markupImages(data.hits);
+    lightbox.refresh();
+    nextPageButt.style.display = 'block';
+
+    smoothScroll();
+
+    if (data.totalHits === galleryElem.childElementCount || galleryElem.childElementCount >= 500) {
+        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        nextPageButt.style.display = 'none';
+        return;
+    };
 }
